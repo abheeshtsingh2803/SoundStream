@@ -1,10 +1,11 @@
-package org.example.Model;
+package org.example.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -19,6 +20,8 @@ public class Playlist {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistId;
     private String playlistName;
+
+    @CreatedDate
     private LocalDate creationDate;
 
     @ManyToMany

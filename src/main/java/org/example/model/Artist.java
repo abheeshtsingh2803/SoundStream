@@ -1,5 +1,6 @@
-package org.example.Model;
+package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,5 +25,6 @@ public class Artist {
     private Genre genre;
 
     @ManyToMany(mappedBy = "artists")
+    @JsonIgnore
     private Set<Song> songs;
 }
