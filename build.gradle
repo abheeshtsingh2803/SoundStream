@@ -9,7 +9,7 @@ application {
     mainClass = 'org.example.SoundStream'
 }
 
-group = 'org.example'
+group = 'org.soundstream'
 version = '0.0.1-SNAPSHOT'
 
 repositories {
