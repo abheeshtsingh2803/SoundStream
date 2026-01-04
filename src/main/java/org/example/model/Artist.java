@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.enums.Genre;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -24,7 +25,7 @@ public class Artist {
     @Enumerated (EnumType .STRING)
     private Genre genre;
 
-    @ManyToMany(mappedBy = "artists")
+    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
     @JsonIgnore
-    private Set<Song> songs;
+    private Set<Song> songs = new HashSet<>();
 }

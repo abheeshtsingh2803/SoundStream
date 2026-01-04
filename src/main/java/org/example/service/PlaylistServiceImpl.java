@@ -5,14 +5,20 @@ import org.example.model.Playlist;
 import org.example.model.Song;
 import org.example.repository.PlaylistRepository;
 import org.example.repository.SongRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class PlaylistServiceImpl implements PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final SongRepository songRepository;
+
+    @Autowired
     public PlaylistServiceImpl(PlaylistRepository playlistRepository, SongRepository songRepository) {
         this.playlistRepository = playlistRepository;
         this.songRepository = songRepository;
@@ -25,8 +31,8 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Playlist getPlaylistByName(String name) {
-        return playlistRepository.findByNameIgnoreCase(name)
+    public Playlist getPlaylistByName(String playlistName) {
+        return playlistRepository.findByPlaylistNameIgnoreCase(playlistName)
                 .orElseThrow(() -> new ResourceNotFoundException("PLayList not found!"));
     }
 
@@ -36,11 +42,11 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Playlist createPlaylist(String name) {
-        return playlistRepository.findByNameIgnoreCase(name)
+    public Playlist createPlaylist(String playlistName) {
+        return playlistRepository.findByPlaylistNameIgnoreCase(playlistName)
                 .orElseGet(() -> {
                     Playlist playlist = new Playlist();
-                    playlist.setPlaylistName(name);
+                    playlist.setPlaylistName(playlistName);
                     return playlistRepository.save(playlist);
                 });
     }
@@ -61,6 +67,7 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlistRepository.deleteById(playlistId);
     }
 
+    @Transactional
     @Override
     public void addSongToPlaylist(Long playlistId, Long songId) {
         Playlist playlist = getPlaylistById(playlistId);

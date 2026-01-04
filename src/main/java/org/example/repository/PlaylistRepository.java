@@ -2,9 +2,11 @@ package org.example.repository;
 
 import org.example.model.Playlist;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+@Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
-    Optional<Playlist> findByNameIgnoreCase(String name);
+    Optional<Playlist> findByPlaylistNameIgnoreCase(String playlistName);
 }
