@@ -1,6 +1,9 @@
 package org.soundstream.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.soundstream.dto.request.CreateAlbumRequest;
+import org.soundstream.dto.response.AlbumResponseDTO;
 import org.soundstream.model.Album;
 import org.soundstream.model.Song;
 import org.soundstream.service.album.AlbumService;
@@ -36,12 +39,8 @@ public class AlbumController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Album createAlbum(
-            @RequestParam String name,
-            @RequestParam String artistName,
-            @RequestParam int releaseYear
-    ) {
-        return albumService.createAlbum(name, artistName, releaseYear);
+    public AlbumResponseDTO createAlbum(@RequestBody @Valid CreateAlbumRequest request) {
+        return albumService.createAlbum(request);
     }
 
     @PutMapping("/{id}")

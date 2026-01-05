@@ -1,13 +1,13 @@
 package org.soundstream.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.soundstream.dto.request.CreateArtistRequest;
+import org.soundstream.dto.response.ArtistResponseDTO;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
 import org.soundstream.service.artist.ArtistService;
-import org.soundstream.enums.Genre;
-import org.soundstream.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,12 +37,12 @@ public class ArtistController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public Artist createArtist(
-            @RequestParam String name,
-            @RequestParam Genre genre
+    public ArtistResponseDTO createArtist(
+            @RequestBody CreateArtistRequest request
     ) {
-        return artistService.createArtist(name, genre);
+        return artistService.createArtist(request);
     }
+
 
     @PutMapping("/{id}")
     public Artist updateArtist(@PathVariable Long id, @RequestBody Artist artist) {

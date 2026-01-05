@@ -1,4 +1,4 @@
-package org.soundstream.enums;
+package org.soundstream.enum_;
 
 public enum Genre {
     POP,

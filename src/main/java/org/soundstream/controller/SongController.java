@@ -1,16 +1,15 @@
 package org.soundstream.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.soundstream.dto.CreateSongRequest;
-import org.soundstream.enums.Genre;
+import org.soundstream.dto.request.CreateSongRequest;
+import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.model.Album;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
 import org.soundstream.service.song.SongService;
-import org.soundstream.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,14 +40,8 @@ public class SongController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Song createSong(
-            @RequestParam String title,
-            @RequestParam String artistName,
-            @RequestParam Genre genre,
-            @RequestParam String albumName,
-            @RequestParam int duration
-    ) {
-        return songService.createSong(title, artistName, genre, albumName, duration);
+    public SongResponseDTO createSong(@RequestBody @Valid CreateSongRequest request) {
+        return songService.createSong(request);
     }
 
 

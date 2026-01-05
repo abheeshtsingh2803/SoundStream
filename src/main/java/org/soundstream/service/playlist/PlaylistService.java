@@ -1,5 +1,7 @@
 package org.soundstream.service.playlist;
 
+import org.soundstream.dto.request.CreatePlaylistRequest;
+import org.soundstream.dto.response.PlaylistResponseDTO;
 import org.soundstream.model.Playlist;
 import org.soundstream.model.Song;
 
@@ -13,7 +15,7 @@ public interface PlaylistService {
 
     List<Playlist> getAllPlaylists();
 
-    Playlist createPlaylist(String name);
+    PlaylistResponseDTO createPlaylist(CreatePlaylistRequest request);
 
     Playlist updatePlaylist(Long playlistId, Playlist playlist);
 

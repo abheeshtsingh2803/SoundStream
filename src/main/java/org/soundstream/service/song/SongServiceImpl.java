@@ -1,32 +1,30 @@
 package org.soundstream.service.song;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.soundstream.dto.request.CreateSongRequest;
+import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.model.Album;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
+import org.soundstream.mapper.SongMapper;
 import org.soundstream.repository.AlbumRepository;
 import org.soundstream.repository.ArtistRepository;
 import org.soundstream.repository.SongRepository;
-import org.soundstream.enums.Genre;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Year;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class SongServiceImpl implements SongService {
 
     private final SongRepository songRepository;
     private final ArtistRepository artistRepository;
     private final AlbumRepository albumRepository;
-    @Autowired
-    public SongServiceImpl(SongRepository songRepository, ArtistRepository artistRepository, AlbumRepository albumRepository) {
-        this.songRepository = songRepository;
-        this.artistRepository = artistRepository;
-        this.albumRepository = albumRepository;
-    }
 
     @Override
     public Song getSongById(Long songId) {
@@ -46,36 +44,29 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    @Transactional
-    public Song createSong(String title, String artistName, Genre genre, String albumName, int duration) {
-        Artist artist = artistRepository.findByArtistNameIgnoreCase(artistName)
-                .orElseGet(() -> {
-                    Artist newArtist = new Artist();
-                    newArtist.setArtistName(artistName);
-                    newArtist.setGenre(genre);
-                    return artistRepository.save(newArtist);
-                });
+    public SongResponseDTO createSong(CreateSongRequest request) {
 
-        Album album = albumRepository.findByAlbumNameIgnoreCase(albumName)
-                .orElseGet(() -> {
-                    Album newAlbum = new Album();
-                    newAlbum.setAlbumName(albumName);
-                    newAlbum.setReleaseYear(Year.now().getValue());
-                    newAlbum.setArtistName(artistName);
-                    return albumRepository.save(newAlbum);
-                });
+        log.info("Creating song: {}", request.getTitle());
+
+        Album album = albumRepository.findById(request.getAlbumId())
+                .orElseThrow(() -> new RuntimeException("Album Not Found"));
+
+        Set<Artist> artists = request.getArtistIds()
+                .stream()
+                .map(artistRepository::getReferenceById)
+                .collect(Collectors.toSet());
 
         Song song = new Song();
-        song.setSongName(title);
-        song.setDuration(duration);
+        song.setSongName(request.getTitle());
+        song.setDuration(request.getDuration());
         song.setAlbum(album);
-        song.getArtists().add(artist);
+        song.getArtists().addAll(artists);
 
-        artist.getSongs().add(song);
-        album.getSongs().add(song);
+        Song saved = songRepository.save(song);
 
-        return songRepository.save(song);
+        return SongMapper.toDto(saved);
     }
+
 
     @Override
     public Song updateSong(Long songId, Song song) {

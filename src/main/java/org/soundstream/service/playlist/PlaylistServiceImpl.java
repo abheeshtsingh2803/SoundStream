@@ -1,6 +1,11 @@
 package org.soundstream.service.playlist;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.soundstream.dto.request.CreatePlaylistRequest;
+import org.soundstream.dto.response.PlaylistResponseDTO;
 import org.soundstream.exception.ResourceNotFoundException;
+import org.soundstream.mapper.PlaylistMapper;
 import org.soundstream.model.Playlist;
 import org.soundstream.model.Song;
 import org.soundstream.repository.PlaylistRepository;
@@ -13,16 +18,12 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class PlaylistServiceImpl implements PlaylistService {
 
     private final PlaylistRepository playlistRepository;
     private final SongRepository songRepository;
-
-    @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, SongRepository songRepository) {
-        this.playlistRepository = playlistRepository;
-        this.songRepository = songRepository;
-    }
 
     @Override
     public Playlist getPlaylistById(Long playlistId) {
@@ -42,13 +43,16 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Playlist createPlaylist(String playlistName) {
-        return playlistRepository.findByPlaylistNameIgnoreCase(playlistName)
-                .orElseGet(() -> {
-                    Playlist playlist = new Playlist();
-                    playlist.setPlaylistName(playlistName);
-                    return playlistRepository.save(playlist);
-                });
+    public PlaylistResponseDTO createPlaylist(CreatePlaylistRequest request) {
+
+        log.info("Creating playlist: {}", request.getName());
+
+        Playlist playlist = new Playlist();
+        playlist.setPlaylistName(request.getName());
+
+        Playlist saved = playlistRepository.save(playlist);
+
+        return PlaylistMapper.toDto(saved);
     }
 
     @Override

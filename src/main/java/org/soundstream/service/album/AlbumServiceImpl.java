@@ -1,9 +1,16 @@
 package org.soundstream.service.album;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.soundstream.dto.request.CreateAlbumRequest;
+import org.soundstream.dto.response.AlbumResponseDTO;
 import org.soundstream.exception.ResourceNotFoundException;
+import org.soundstream.mapper.AlbumMapper;
 import org.soundstream.model.Album;
+import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
 import org.soundstream.repository.AlbumRepository;
+import org.soundstream.repository.ArtistRepository;
 import org.soundstream.repository.SongRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,16 +19,13 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AlbumServiceImpl implements AlbumService{
 
     private final AlbumRepository albumRepository;
     private final SongRepository songRepository;
-
-    @Autowired
-    public AlbumServiceImpl(AlbumRepository albumRepository, SongRepository songRepository) {
-        this.albumRepository = albumRepository;
-        this.songRepository = songRepository;
-    }
+    private final ArtistRepository artistRepository;
 
     @Override
     public Album getAlbumById(Long albumId) {
@@ -41,15 +45,22 @@ public class AlbumServiceImpl implements AlbumService{
     }
 
     @Override
-    public Album createAlbum(String name, String artistName, int releaseYear) {
-        return albumRepository.findByAlbumNameIgnoreCase(name)
-                .orElseGet(() -> {
-                        Album album = new Album();
-                        album.setAlbumName(name);
-                        album.setArtistName(artistName);
-                        album.setReleaseYear(releaseYear);
-                        return albumRepository.save(album);
-                    });
+    public AlbumResponseDTO createAlbum(CreateAlbumRequest request) {
+
+        log.info("Creating album: {}", request.getName());
+
+        Artist artist = artistRepository.findById(request.getArtistId())
+                .orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+        log.info("Artist ID: {}", artist.getArtistName());
+
+        Album album = new Album();
+        album.setAlbumName(request.getName());
+        album.setReleaseYear(request.getReleaseYear());
+        album.setArtistName(artist.getArtistName());
+
+        Album saved = albumRepository.save(album);
+
+        return AlbumMapper.toDto(saved);
     }
 
     @Override

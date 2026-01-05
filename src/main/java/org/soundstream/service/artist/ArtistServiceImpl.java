@@ -1,25 +1,26 @@
 package org.soundstream.service.artist;
 
-import org.soundstream.enums.Genre;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.soundstream.dto.request.CreateArtistRequest;
+import org.soundstream.dto.response.ArtistResponseDTO;
+import org.soundstream.exception.ResourceAlreadyExistsException;
 import org.soundstream.exception.ResourceNotFoundException;
+import org.soundstream.mapper.ArtistMapper;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
 import org.soundstream.repository.ArtistRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class ArtistServiceImpl implements ArtistService{
 
     private final ArtistRepository artistRepository;
-
-    @Autowired
-    public ArtistServiceImpl(ArtistRepository artistRepository) {
-        this.artistRepository = artistRepository;
-    }
 
     @Override
     public Artist getArtistById(Long artistId) {
@@ -39,14 +40,25 @@ public class ArtistServiceImpl implements ArtistService{
     }
 
     @Override
-    public Artist createArtist(String name, Genre genre) {
-        return artistRepository.findByArtistNameIgnoreCase(name)
-                .orElseGet(() -> {
-                    Artist newArtist = new Artist();
-                    newArtist.setArtistName(name);
-                    newArtist.setGenre(genre);
-                    return artistRepository.save(newArtist);
-                });
+    public ArtistResponseDTO createArtist(CreateArtistRequest request) {
+
+        boolean exists = artistRepository
+                .findByArtistNameIgnoreCase(request.getName())
+                .isPresent();
+
+        if (exists) {
+            throw new ResourceAlreadyExistsException(
+                    "Artist already exists with name: " + request.getName()
+            );
+        }
+
+        Artist artist = new Artist();
+        artist.setArtistName(request.getName());
+        artist.setGenre(request.getGenre());
+
+        Artist saved = artistRepository.save(artist);
+
+        return ArtistMapper.toDto(saved);
     }
 
     @Override

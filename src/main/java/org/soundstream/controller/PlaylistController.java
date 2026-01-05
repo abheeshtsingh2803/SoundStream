@@ -1,19 +1,20 @@
 package org.soundstream.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.soundstream.dto.request.CreatePlaylistRequest;
+import org.soundstream.dto.response.PlaylistResponseDTO;
 import org.soundstream.model.Playlist;
 import org.soundstream.model.Song;
 import org.soundstream.service.playlist.PlaylistService;
-import org.soundstream.exception.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/v1/playlists")
+@RequestMapping("/playlists")
 @RequiredArgsConstructor
 public class PlaylistController {
 
@@ -36,8 +37,8 @@ public class PlaylistController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Playlist createPlaylist(@RequestParam String name) {
-        return playlistService.createPlaylist(name);
+    public PlaylistResponseDTO createPlaylist(@RequestBody @Valid CreatePlaylistRequest request) {
+        return playlistService.createPlaylist(request);
     }
 
     @PutMapping("/{id}")

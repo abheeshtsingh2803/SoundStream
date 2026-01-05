@@ -1,5 +1,7 @@
 package org.soundstream.service.album;
 
+import org.soundstream.dto.request.CreateAlbumRequest;
+import org.soundstream.dto.response.AlbumResponseDTO;
 import org.soundstream.model.Album;
 import org.soundstream.model.Song;
 
@@ -14,7 +16,7 @@ public interface AlbumService {
 
     List<Album> getAllAlbums();
 
-    Album createAlbum(String name, String artistName, int releaseYear);
+    AlbumResponseDTO createAlbum(CreateAlbumRequest request);
 
     Album updateAlbum(Long albumId, Album album);
 

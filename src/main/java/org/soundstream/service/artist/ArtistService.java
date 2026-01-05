@@ -1,8 +1,9 @@
 package org.soundstream.service.artist;
 
+import org.soundstream.dto.request.CreateArtistRequest;
+import org.soundstream.dto.response.ArtistResponseDTO;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
-import org.soundstream.enums.Genre;
 
 import java.util.List;
 import java.util.Set;
@@ -15,7 +16,7 @@ public interface ArtistService {
 
     List<Artist> getAllArtists();
 
-    Artist createArtist(String name, Genre genre);
+    ArtistResponseDTO createArtist(CreateArtistRequest request);
 
     Artist updateArtist(Long artistId, Artist artist);
 

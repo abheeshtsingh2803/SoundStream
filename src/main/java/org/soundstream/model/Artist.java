@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.soundstream.enums.Genre;
+import org.soundstream.enum_.Genre;
 
 import java.util.HashSet;
 import java.util.Set;
