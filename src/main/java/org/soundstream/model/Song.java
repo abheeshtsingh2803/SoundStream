@@ -20,7 +20,7 @@ public class Song {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long songID;
     private String songName;
-    private int duration;
+    private Integer duration;
 
     @ManyToOne
     private Album album;

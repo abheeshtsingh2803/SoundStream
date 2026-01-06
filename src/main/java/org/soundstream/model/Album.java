@@ -19,7 +19,7 @@ public class Album {
 
     private String albumName;
     private String artistName;
-    private int releaseYear;
+    private Integer releaseYear;
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

@@ -8,7 +8,7 @@ import java.util.Set;
 public class SongResponseDTO {
     private Long id;
     private String title;
-    private int duration;
+    private Integer duration;
     private String albumName;
     private Set<String> artists;
 }

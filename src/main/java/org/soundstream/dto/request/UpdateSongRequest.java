@@ -1,24 +1,21 @@
 package org.soundstream.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
-@Data
-public class CreateSongRequest {
+@Getter
+@Setter
+public class UpdateSongRequest {
 
-    @NotBlank
     private String title;
 
-    @Positive
+    @Positive(message = "Duration must be greater than zero")
     private Integer duration;
 
-    @NotNull
     private Long albumId;
 
-    @NotNull
     private Set<Long> artistIds;
 }

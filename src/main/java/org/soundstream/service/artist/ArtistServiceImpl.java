@@ -3,41 +3,70 @@ package org.soundstream.service.artist;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.soundstream.dto.request.CreateArtistRequest;
+import org.soundstream.dto.request.UpdateArtistRequest;
 import org.soundstream.dto.response.ArtistResponseDTO;
+import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.exception.ResourceAlreadyExistsException;
 import org.soundstream.exception.ResourceNotFoundException;
 import org.soundstream.mapper.ArtistMapper;
+import org.soundstream.mapper.SongMapper;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
 import org.soundstream.repository.ArtistRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class ArtistServiceImpl implements ArtistService{
 
+    @Autowired
     private final ArtistRepository artistRepository;
 
     @Override
-    public Artist getArtistById(Long artistId) {
-        return artistRepository.findById(artistId)
-                .orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+    @Transactional(readOnly = true)
+    public ArtistResponseDTO getArtistById(Long artistId) {
+
+        Artist artist = artistRepository.findById(artistId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Artist not found")
+                );
+
+        log.info("getArtistById: artistId={}", artistId);
+        return ArtistMapper.toDto(artist);
     }
 
     @Override
-    public Artist getArtistByName(String name) {
-        return artistRepository.findByArtistNameIgnoreCase(name)
-                .orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
+    public ArtistResponseDTO getArtistByName(String name) {
+        Artist artist = artistRepository.findByArtistNameIgnoreCase(name)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Artist not found")
+                );
+
+        log.info("getArtistByName: artistName={}", artist.getArtistName());
+        return ArtistMapper.toDto(artist);
     }
 
     @Override
-    public List<Artist> getAllArtists() {
-        return artistRepository.findAll();
+    public Page<ArtistResponseDTO> getAllArtists(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("artistName").ascending());
+
+        Page<Artist> artists = artistRepository.findAll(pageable);
+
+        return artists.map(ArtistMapper::toDto);
     }
+
 
     @Override
     public ArtistResponseDTO createArtist(CreateArtistRequest request) {
@@ -47,6 +76,9 @@ public class ArtistServiceImpl implements ArtistService{
                 .isPresent();
 
         if (exists) {
+            log.error("Artist creation failed. Artist already exists with name={}",
+                    request.getName());
+
             throw new ResourceAlreadyExistsException(
                     "Artist already exists with name: " + request.getName()
             );
@@ -58,16 +90,31 @@ public class ArtistServiceImpl implements ArtistService{
 
         Artist saved = artistRepository.save(artist);
 
+        log.info("Artist created successfully with name={}", saved.getArtistName());
+
         return ArtistMapper.toDto(saved);
     }
 
     @Override
-    public Artist updateArtist(Long artistId, Artist artist) {
-        Artist oldArtist = getArtistById(artistId);
-        oldArtist.setArtistName(artist.getArtistName());
-        oldArtist.setGenre(artist.getGenre());
-        return artistRepository.save(oldArtist);
+    @Transactional
+    public ArtistResponseDTO updateArtist(Long artistId, UpdateArtistRequest request) {
+
+        Artist artist = artistRepository.findById(artistId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Artist not found with id: " + artistId)
+                );
+
+        if (request.getName() != null) {
+            artist.setArtistName(request.getName());
+        }
+
+        if (request.getGenre() != null) {
+            artist.setGenre(request.getGenre());
+        }
+
+        return ArtistMapper.toDto(artistRepository.save(artist));
     }
+
 
     @Override
     public void deleteArtistById(Long artistId) {
@@ -79,9 +126,16 @@ public class ArtistServiceImpl implements ArtistService{
     }
 
     @Override
-    public Set<Song> getSongsByArtistId(Long artistId) {
-        Artist artist = getArtistById(artistId);
-
-        return artist.getSongs();
+    @Transactional(readOnly = true)
+    public Set<SongResponseDTO> getSongsByArtistId(Long artistId) {
+        Artist artist = artistRepository.findById(artistId)
+                .orElseThrow(() ->
+                            new ResourceNotFoundException("Artist not found with id: " + artistId)
+                        );
+        log.info("getSongsByArtistId: artistId={}", artistId);
+        return artist.getSongs()
+                .stream()
+                .map(SongMapper::toDto)
+                .collect(Collectors.toSet());
     }
 }

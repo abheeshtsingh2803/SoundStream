@@ -8,6 +8,6 @@ import java.util.Set;
 public class AlbumResponseDTO {
     private Long id;
     private String name;
-    private int releaseYear;
+    private Integer releaseYear;
     private Set<String> songs;
 }

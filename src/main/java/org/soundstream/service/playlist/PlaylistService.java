@@ -1,29 +1,33 @@
 package org.soundstream.service.playlist;
 
 import org.soundstream.dto.request.CreatePlaylistRequest;
+import org.soundstream.dto.request.UpdatePlaylistRequest;
 import org.soundstream.dto.response.PlaylistResponseDTO;
+import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.model.Playlist;
 import org.soundstream.model.Song;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Set;
 
 public interface PlaylistService {
-    Playlist getPlaylistById(Long playlistId);
+    PlaylistResponseDTO getPlaylistById(Long playlistId);
 
-    Playlist getPlaylistByName(String name);
+    PlaylistResponseDTO getPlaylistByName(String name);
 
-    List<Playlist> getAllPlaylists();
+    Page<PlaylistResponseDTO> getAllPlaylists(int page, int size);
 
     PlaylistResponseDTO createPlaylist(CreatePlaylistRequest request);
 
-    Playlist updatePlaylist(Long playlistId, Playlist playlist);
+    PlaylistResponseDTO updatePlaylist(Long playlistId, UpdatePlaylistRequest request);
 
     void deletePlaylistById(Long playlistId);
 
-    void addSongToPlaylist(Long playlistId, Long songId);
+    PlaylistResponseDTO addSongsToPlaylist(Long playlistId, Set<Long> songIds);
 
-    void removeSongFromPlaylist(Long playlistId, Long songId);
+    PlaylistResponseDTO removeSongFromPlaylist(Long playlistId, Long songId);
 
-    Set<Song> getSongsByPlaylistId(Long playlistId);
+    Set<SongResponseDTO> getSongsByPlaylistId(Long playlistId);
+
 }

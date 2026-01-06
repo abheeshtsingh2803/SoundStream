@@ -1,26 +1,29 @@
 package org.soundstream.service.artist;
 
 import org.soundstream.dto.request.CreateArtistRequest;
+import org.soundstream.dto.request.UpdateArtistRequest;
 import org.soundstream.dto.response.ArtistResponseDTO;
+import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.model.Artist;
 import org.soundstream.model.Song;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Set;
 
 public interface ArtistService {
 
-    Artist getArtistById(Long artistId);
+    ArtistResponseDTO getArtistById(Long artistId);
 
-    Artist getArtistByName(String name);
+    ArtistResponseDTO getArtistByName(String name);
 
-    List<Artist> getAllArtists();
+    Page<ArtistResponseDTO> getAllArtists(int page, int size);
 
     ArtistResponseDTO createArtist(CreateArtistRequest request);
 
-    Artist updateArtist(Long artistId, Artist artist);
+    ArtistResponseDTO updateArtist(Long artistId, UpdateArtistRequest request);
 
     void deleteArtistById(Long artistId);
 
-    Set<Song> getSongsByArtistId(Long artistId);
+    Set<SongResponseDTO> getSongsByArtistId(Long artistId);
 }

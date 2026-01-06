@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface PlaylistRepository extends JpaRepository<Playlist, Long> {
     Optional<Playlist> findByPlaylistNameIgnoreCase(String playlistName);
+
+    boolean existsByPlaylistNameIgnoreCase(String playlistName);
 }
