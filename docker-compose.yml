@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: soundstream-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: soundstream
+      POSTGRES_USER: soundstream
+      POSTGRES_PASSWORD: soundstream
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  soundstream-app:
+    build: .
+    container_name: soundstream-app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/soundstream
+      SPRING_DATASOURCE_USERNAME: soundstream
+      SPRING_DATASOURCE_PASSWORD: soundstream
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    restart: always
+
+volumes:
+  postgres_data:

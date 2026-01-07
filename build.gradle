@@ -6,7 +6,7 @@ plugins {
 }
 
 application {
-    mainClass = 'org.example.SoundStream'
+    mainClass = 'org.soundstream.SoundStream'
 }
 
 group = 'org.soundstream'
