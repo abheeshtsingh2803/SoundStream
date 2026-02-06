@@ -1,19 +1,15 @@
 package org.soundstream.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.soundstream.dto.request.CreateArtistRequest;
 import org.soundstream.dto.request.UpdateArtistRequest;
 import org.soundstream.dto.response.ArtistResponseDTO;
 import org.soundstream.dto.response.SongResponseDTO;
-import org.soundstream.model.Artist;
-import org.soundstream.model.Song;
 import org.soundstream.service.artist.ArtistService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController

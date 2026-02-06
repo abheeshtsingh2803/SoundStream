@@ -22,6 +22,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation("jakarta.validation:jakarta.validation-api:4.0.0-M1")
+    implementation("org.springframework.boot:spring-boot-starter-validation:4.0.1")
 
 
     // Postgres (runtime)

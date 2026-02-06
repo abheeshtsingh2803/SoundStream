@@ -7,14 +7,11 @@ import org.soundstream.dto.request.CreatePlaylistRequest;
 import org.soundstream.dto.request.UpdatePlaylistRequest;
 import org.soundstream.dto.response.PlaylistResponseDTO;
 import org.soundstream.dto.response.SongResponseDTO;
-import org.soundstream.model.Playlist;
-import org.soundstream.model.Song;
 import org.soundstream.service.playlist.PlaylistService;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Set;
 
 @RestController

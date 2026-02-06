@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Album {
+public class Albums {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long albumId;
@@ -23,5 +23,5 @@ public class Album {
 
     @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<Song> songs = new ArrayList<>();
+    private List<Songs> songs = new ArrayList<>();
 }

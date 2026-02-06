@@ -11,9 +11,9 @@ import org.soundstream.exception.ResourceAlreadyExistsException;
 import org.soundstream.exception.ResourceNotFoundException;
 import org.soundstream.mapper.AlbumMapper;
 import org.soundstream.mapper.ArtistMapper;
-import org.soundstream.model.Album;
-import org.soundstream.model.Artist;
-import org.soundstream.model.Song;
+import org.soundstream.model.Albums;
+import org.soundstream.model.Artists;
+import org.soundstream.model.Songs;
 import org.soundstream.mapper.SongMapper;
 import org.soundstream.repository.AlbumRepository;
 import org.soundstream.repository.ArtistRepository;
@@ -25,7 +25,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,14 +41,14 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public SongResponseDTO getSongById(Long songId) {
 
-        Song song = songRepository.findById(songId)
+        Songs songs = songRepository.findById(songId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Song not found with id: " + songId)
                 );
 
         log.info("Fetched song with id={}", songId);
 
-        return SongMapper.toDto(song);
+        return SongMapper.toDto(songs);
     }
 
 
@@ -57,14 +56,14 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public SongResponseDTO getSongByTitle(String title) {
 
-        Song song = songRepository.findBySongNameIgnoreCase(title)
+        Songs songs = songRepository.findBySongNameIgnoreCase(title)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Song not found with title: " + title)
                 );
 
         log.info("Fetched song with title='{}'", title);
 
-        return SongMapper.toDto(song);
+        return SongMapper.toDto(songs);
     }
 
 
@@ -73,7 +72,7 @@ public class SongServiceImpl implements SongService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("songName").ascending());
 
-        Page<Song> songs = songRepository.findAll(pageable);
+        Page<Songs> songs = songRepository.findAll(pageable);
 
         return songs.map(SongMapper::toDto);
     }
@@ -97,23 +96,23 @@ public class SongServiceImpl implements SongService {
 
         log.info("Creating song: {}", request.getTitle());
 
-        Album album = albumRepository.findById(request.getAlbumId())
+        Albums albums = albumRepository.findById(request.getAlbumId())
                 .orElseThrow(() ->
                         new RuntimeException("Album Not Found")
                 );
 
-        Set<Artist> artists = request.getArtistIds()
+        Set<Artists> artists = request.getArtistIds()
                 .stream()
                 .map(artistRepository::getReferenceById)
                 .collect(Collectors.toSet());
 
-        Song song = new Song();
-        song.setSongName(request.getTitle());
-        song.setDuration(request.getDuration());
-        song.setAlbum(album);
-        song.getArtists().addAll(artists);
+        Songs songs = new Songs();
+        songs.setSongName(request.getTitle());
+        songs.setDuration(request.getDuration());
+        songs.setAlbums(albums);
+        songs.getArtists().addAll(artists);
 
-        Song saved = songRepository.save(song);
+        Songs saved = songRepository.save(songs);
 
         return SongMapper.toDto(saved);
     }
@@ -122,33 +121,33 @@ public class SongServiceImpl implements SongService {
     @Override
     public SongResponseDTO updateSong(Long songId, UpdateSongRequest request) {
 
-        Song song = songRepository.findById(songId)
+        Songs songs = songRepository.findById(songId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Song not found with id: " + songId)
                 );
 
         if (request.getTitle() != null) {
-            song.setSongName(request.getTitle());
+            songs.setSongName(request.getTitle());
         }
 
         if (request.getDuration() != null) {
-            song.setDuration(request.getDuration());
+            songs.setDuration(request.getDuration());
         }
 
         if (request.getAlbumId() != null) {
-            Album album = albumRepository.getReferenceById(request.getAlbumId());
-            song.setAlbum(album);
+            Albums albums = albumRepository.getReferenceById(request.getAlbumId());
+            songs.setAlbums(albums);
         }
 
         if (request.getArtistIds() != null) {
-            Set<Artist> artists = request.getArtistIds()
+            Set<Artists> artists = request.getArtistIds()
                     .stream()
                     .map(artistRepository::getReferenceById)
                     .collect(Collectors.toSet());
-            song.setArtists(artists);
+            songs.setArtists(artists);
         }
 
-        return SongMapper.toDto(songRepository.save(song));
+        return SongMapper.toDto(songRepository.save(songs));
     }
 
 
@@ -169,14 +168,14 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public Set<ArtistResponseDTO> getArtistsBySongId(Long songId) {
 
-        Song song = songRepository.findById(songId)
+        Songs songs = songRepository.findById(songId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Song not found with id: " + songId)
                 );
 
         log.info("Fetched artists for songId={}", songId);
 
-        return song.getArtists()
+        return songs.getArtists()
                 .stream()
                 .map(ArtistMapper::toDto)
                 .collect(Collectors.toSet());
@@ -188,14 +187,14 @@ public class SongServiceImpl implements SongService {
     @Transactional(readOnly = true)
     public AlbumResponseDTO getAlbumBySongId(Long songId) {
 
-        Song song = songRepository.findById(songId)
+        Songs songs = songRepository.findById(songId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Song not found with id: " + songId)
                 );
 
         log.info("Fetched album for songId={}", songId);
 
-        return AlbumMapper.toDto(song.getAlbum());
+        return AlbumMapper.toDto(songs.getAlbums());
     }
 
 }

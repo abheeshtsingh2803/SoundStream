@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.soundstream.enum_.Genre;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,22 +16,16 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class Song {
+public class Artists {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long songID;
-    private String songName;
-    private Integer duration;
+    private Long artistId;
 
-    @ManyToOne
-    private Album album;
+    private String artistName;
+    @Enumerated (EnumType .STRING)
+    private Genre genre;
 
-    @ManyToMany
-    @JoinTable(
-            name="song_artist",
-            joinColumns = @JoinColumn(name = "song_id"),
-            inverseJoinColumns = @JoinColumn(name = "artist_id")
-    )
+    @ManyToMany(mappedBy = "artists", fetch = FetchType.EAGER)
     @JsonIgnore
-    private Set<Artist> artists = new HashSet<>();
+    private Set<Songs> songs = new HashSet<>();
 }

@@ -5,12 +5,8 @@ import org.soundstream.dto.request.UpdateSongRequest;
 import org.soundstream.dto.response.AlbumResponseDTO;
 import org.soundstream.dto.response.ArtistResponseDTO;
 import org.soundstream.dto.response.SongResponseDTO;
-import org.soundstream.model.Album;
-import org.soundstream.model.Artist;
-import org.soundstream.model.Song;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
 import java.util.Set;
 
 public interface SongService {

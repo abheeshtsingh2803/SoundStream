@@ -10,8 +10,7 @@ import org.soundstream.exception.ResourceAlreadyExistsException;
 import org.soundstream.exception.ResourceNotFoundException;
 import org.soundstream.mapper.ArtistMapper;
 import org.soundstream.mapper.SongMapper;
-import org.soundstream.model.Artist;
-import org.soundstream.model.Song;
+import org.soundstream.model.Artists;
 import org.soundstream.repository.ArtistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,24 +35,24 @@ public class ArtistServiceImpl implements ArtistService{
     @Transactional(readOnly = true)
     public ArtistResponseDTO getArtistById(Long artistId) {
 
-        Artist artist = artistRepository.findById(artistId)
+        Artists artists = artistRepository.findById(artistId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Artist not found")
                 );
 
         log.info("getArtistById: artistId={}", artistId);
-        return ArtistMapper.toDto(artist);
+        return ArtistMapper.toDto(artists);
     }
 
     @Override
     public ArtistResponseDTO getArtistByName(String name) {
-        Artist artist = artistRepository.findByArtistNameIgnoreCase(name)
+        Artists artists = artistRepository.findByArtistNameIgnoreCase(name)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Artist not found")
                 );
 
-        log.info("getArtistByName: artistName={}", artist.getArtistName());
-        return ArtistMapper.toDto(artist);
+        log.info("getArtistByName: artistName={}", artists.getArtistName());
+        return ArtistMapper.toDto(artists);
     }
 
     @Override
@@ -62,7 +60,7 @@ public class ArtistServiceImpl implements ArtistService{
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("artistName").ascending());
 
-        Page<Artist> artists = artistRepository.findAll(pageable);
+        Page<Artists> artists = artistRepository.findAll(pageable);
 
         return artists.map(ArtistMapper::toDto);
     }
@@ -84,11 +82,11 @@ public class ArtistServiceImpl implements ArtistService{
             );
         }
 
-        Artist artist = new Artist();
-        artist.setArtistName(request.getName());
-        artist.setGenre(request.getGenre());
+        Artists artists = new Artists();
+        artists.setArtistName(request.getName());
+        artists.setGenre(request.getGenre());
 
-        Artist saved = artistRepository.save(artist);
+        Artists saved = artistRepository.save(artists);
 
         log.info("Artist created successfully with name={}", saved.getArtistName());
 
@@ -99,20 +97,20 @@ public class ArtistServiceImpl implements ArtistService{
     @Transactional
     public ArtistResponseDTO updateArtist(Long artistId, UpdateArtistRequest request) {
 
-        Artist artist = artistRepository.findById(artistId)
+        Artists artists = artistRepository.findById(artistId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Artist not found with id: " + artistId)
                 );
 
         if (request.getName() != null) {
-            artist.setArtistName(request.getName());
+            artists.setArtistName(request.getName());
         }
 
         if (request.getGenre() != null) {
-            artist.setGenre(request.getGenre());
+            artists.setGenre(request.getGenre());
         }
 
-        return ArtistMapper.toDto(artistRepository.save(artist));
+        return ArtistMapper.toDto(artistRepository.save(artists));
     }
 
 
@@ -128,12 +126,12 @@ public class ArtistServiceImpl implements ArtistService{
     @Override
     @Transactional(readOnly = true)
     public Set<SongResponseDTO> getSongsByArtistId(Long artistId) {
-        Artist artist = artistRepository.findById(artistId)
+        Artists artists = artistRepository.findById(artistId)
                 .orElseThrow(() ->
                             new ResourceNotFoundException("Artist not found with id: " + artistId)
                         );
         log.info("getSongsByArtistId: artistId={}", artistId);
-        return artist.getSongs()
+        return artists.getSongs()
                 .stream()
                 .map(SongMapper::toDto)
                 .collect(Collectors.toSet());

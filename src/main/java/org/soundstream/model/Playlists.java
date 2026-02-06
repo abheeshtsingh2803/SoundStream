@@ -17,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Playlist {
+public class Playlists {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistId;
@@ -33,5 +33,5 @@ public class Playlist {
             inverseJoinColumns = @JoinColumn(name = "song_id")
     )
     @JsonIgnore
-    private Set<Song> songs = new HashSet<>();
+    private Set<Songs> songs = new HashSet<>();
 }

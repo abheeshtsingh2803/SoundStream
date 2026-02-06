@@ -1,23 +1,23 @@
 package org.soundstream.mapper;
 
 import org.soundstream.dto.response.PlaylistResponseDTO;
-import org.soundstream.model.Playlist;
-import org.soundstream.model.Song;
+import org.soundstream.model.Playlists;
+import org.soundstream.model.Songs;
 
 import java.util.stream.Collectors;
 
 public class PlaylistMapper {
 
-    public static PlaylistResponseDTO toDto(Playlist playlist) {
+    public static PlaylistResponseDTO toDto(Playlists playlists) {
 
         PlaylistResponseDTO dto = new PlaylistResponseDTO();
-        dto.setId(playlist.getPlaylistId());
-        dto.setName(playlist.getPlaylistName());
+        dto.setId(playlists.getPlaylistId());
+        dto.setName(playlists.getPlaylistName());
 
         dto.setSongs(
-                playlist.getSongs()
+                playlists.getSongs()
                         .stream()
-                        .map(Song::getSongName)
+                        .map(Songs::getSongName)
                         .collect(Collectors.toSet())
         );
 

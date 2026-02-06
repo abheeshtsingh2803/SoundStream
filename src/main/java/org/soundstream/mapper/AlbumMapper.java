@@ -1,24 +1,24 @@
 package org.soundstream.mapper;
 
 import org.soundstream.dto.response.AlbumResponseDTO;
-import org.soundstream.model.Album;
-import org.soundstream.model.Song;
+import org.soundstream.model.Albums;
+import org.soundstream.model.Songs;
 
 import java.util.stream.Collectors;
 
 public class AlbumMapper {
 
-    public static AlbumResponseDTO toDto(Album album) {
+    public static AlbumResponseDTO toDto(Albums albums) {
 
         AlbumResponseDTO dto = new AlbumResponseDTO();
-        dto.setId(album.getAlbumId());
-        dto.setName(album.getAlbumName());
-        dto.setReleaseYear(album.getReleaseYear());
+        dto.setId(albums.getAlbumId());
+        dto.setName(albums.getAlbumName());
+        dto.setReleaseYear(albums.getReleaseYear());
 
         dto.setSongs(
-                album.getSongs()
+                albums.getSongs()
                         .stream()
-                        .map(Song::getSongName)
+                        .map(Songs::getSongName)
                         .collect(Collectors.toSet())
         );
 

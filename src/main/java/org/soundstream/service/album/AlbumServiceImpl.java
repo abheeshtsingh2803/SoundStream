@@ -4,20 +4,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.soundstream.dto.request.CreateAlbumRequest;
 import org.soundstream.dto.request.UpdateAlbumRequest;
-import org.soundstream.dto.request.UpdateSongRequest;
 import org.soundstream.dto.response.AlbumResponseDTO;
 import org.soundstream.dto.response.SongResponseDTO;
 import org.soundstream.exception.ResourceAlreadyExistsException;
 import org.soundstream.exception.ResourceNotFoundException;
 import org.soundstream.mapper.AlbumMapper;
 import org.soundstream.mapper.SongMapper;
-import org.soundstream.model.Album;
-import org.soundstream.model.Artist;
-import org.soundstream.model.Song;
+import org.soundstream.model.Albums;
+import org.soundstream.model.Artists;
 import org.soundstream.repository.AlbumRepository;
 import org.soundstream.repository.ArtistRepository;
 import org.soundstream.repository.SongRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +22,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,24 +37,24 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     @Transactional (readOnly = true)
     public AlbumResponseDTO getAlbumById(Long albumId) {
-        Album album = albumRepository.findById(albumId)
+        Albums albums = albumRepository.findById(albumId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Album not found")
                 );
 
         log.info("Album found with id={}", albumId);
-        return AlbumMapper.toDto(album);
+        return AlbumMapper.toDto(albums);
     }
 
     @Override
     @Transactional (readOnly = true)
     public AlbumResponseDTO getAlbumByName(String name) {
-        Album album = albumRepository.findByAlbumNameIgnoreCase(name)
+        Albums albums = albumRepository.findByAlbumNameIgnoreCase(name)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Album not found")
                 );
         log.info("Album found with name={}", name);
-        return AlbumMapper.toDto(album);
+        return AlbumMapper.toDto(albums);
     }
 
     @Override
@@ -66,7 +62,7 @@ public class AlbumServiceImpl implements AlbumService{
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("albumName").descending());
 
-        Page<Album> albums = albumRepository.findAll(pageable);
+        Page<Albums> albums = albumRepository.findAll(pageable);
 
         return albums.map(AlbumMapper::toDto);
     }
@@ -89,18 +85,18 @@ public class AlbumServiceImpl implements AlbumService{
 
         log.info("Creating album: {}", request.getName());
 
-        Artist artist = artistRepository.findById(request.getArtistId())
+        Artists artists = artistRepository.findById(request.getArtistId())
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Artist not found")
                 );
-        log.info("Artist ID: {}", artist.getArtistName());
+        log.info("Artist ID: {}", artists.getArtistName());
 
-        Album album = new Album();
-        album.setAlbumName(request.getName());
-        album.setReleaseYear(request.getReleaseYear());
-        album.setArtistName(artist.getArtistName());
+        Albums albums = new Albums();
+        albums.setAlbumName(request.getName());
+        albums.setReleaseYear(request.getReleaseYear());
+        albums.setArtistName(artists.getArtistName());
 
-        Album saved = albumRepository.save(album);
+        Albums saved = albumRepository.save(albums);
 
         return AlbumMapper.toDto(saved);
     }
@@ -108,24 +104,24 @@ public class AlbumServiceImpl implements AlbumService{
     @Override
     public AlbumResponseDTO updateAlbum(Long albumId, UpdateAlbumRequest request) {
 
-        Album album = albumRepository.findById(albumId)
+        Albums albums = albumRepository.findById(albumId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Album not found with id " + albumId)
                 );
 
         if(request.getName() != null && !request.getName().isEmpty()) {
-            album.setAlbumName(request.getName());
+            albums.setAlbumName(request.getName());
         }
 
         if(request.getReleaseYear() != null) {
-            album.setReleaseYear(request.getReleaseYear());
+            albums.setReleaseYear(request.getReleaseYear());
         }
 
         if(request.getArtistId() != null) {
-            album.setAlbumId(request.getArtistId());
+            albums.setAlbumId(request.getArtistId());
         }
 
-        Album updated = albumRepository.save(album);
+        Albums updated = albumRepository.save(albums);
         return AlbumMapper.toDto(updated);
     }
 
@@ -145,13 +141,13 @@ public class AlbumServiceImpl implements AlbumService{
     @Transactional(readOnly = true)
     public Set<SongResponseDTO> getSongsByAlbumId(Long albumId) {
 
-        Album album = albumRepository.findById(albumId)
+        Albums albums = albumRepository.findById(albumId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Album not found")
                 );
 
         log.info("Fetched Songs by Album with id={}", albumId);
-        return album.getSongs()
+        return albums.getSongs()
                 .stream()
                 .map(SongMapper::toDto)
                 .collect(Collectors.toSet());
